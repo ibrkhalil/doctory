@@ -1,4 +1,4 @@
-package doctorAppointmentManagement
+package doctorAvailability
 
 import (
 	"net/http"
@@ -17,21 +17,24 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func getAppointments(ctx *gin.Context) {
-	// Logic to get appointments
+	AvailabilityDB.ListAvailability()
 	ctx.JSON(http.StatusOK, gin.H{"message": "Get all appointments"})
 }
 
 func createAppointment(ctx *gin.Context) {
-	// Logic to create an appointment
+	req := CreateAvailabilityFromRequest(ctx)
+	AvailabilityDB.AddAvailability(req)
 	ctx.JSON(http.StatusCreated, gin.H{"message": "Appointment created"})
 }
 
 func updateAppointment(ctx *gin.Context) {
-	// Logic to update an appointment
+	req := CreateAvailabilityFromRequest(ctx)
+	AvailabilityDB.UpdateAvailability(req)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Appointment updated"})
 }
 
 func deleteAppointment(ctx *gin.Context) {
-	// Logic to delete an appointment
+	req := CreateAvailabilityFromRequest(ctx)
+	AvailabilityDB.DeleteAvailability(req.ID)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Appointment deleted"})
 }

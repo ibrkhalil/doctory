@@ -1,24 +1,25 @@
-package doctorAppointmentManagement
+package doctorAvailability
 
 import (
 	"errors"
 	"time"
 
-	"github.com/ibrkhalil/doctory/internal/package/confirmAppointment"
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-type availabilityDB struct {
+type InMemoryAvailabilityDB struct {
 	*schema.DoctorAvailabilityInMemoryDB
 }
 
-func NewInMemoryAvailabilityDB() *schema.DoctorAvailabilityInMemoryDB {
-	return &schema.DoctorAvailabilityInMemoryDB{
-		DoctorAvailibities: []schema.DoctorAvailability{},
+func NewInMemoryAvailabilityDB() *InMemoryAvailabilityDB {
+	return &InMemoryAvailabilityDB{
+		DoctorAvailabilityInMemoryDB: &schema.DoctorAvailabilityInMemoryDB{
+			DoctorAvailibities: []schema.DoctorAvailability{},
+		},
 	}
 }
 
-func (db availabilityDB) AddAvailability(availability schema.DoctorAvailability) error {
+func (db InMemoryAvailabilityDB) AddAvailability(availability schema.DoctorAvailability) error {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	availability.ToTime = availability.Time.Add(time.Hour)
@@ -26,7 +27,19 @@ func (db availabilityDB) AddAvailability(availability schema.DoctorAvailability)
 	return nil
 }
 
-func (db availabilityDB) GetAvailabilityAtTime(date time.Time) (bool, error) {
+func (db InMemoryAvailabilityDB) UpdateAvailability(availability schema.DoctorAvailability) error {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
+	for _, v := range db.DoctorAvailibities {
+		if v.ID == availability.ID {
+			v = availability
+		}
+	}
+
+	return nil
+}
+
+func (db InMemoryAvailabilityDB) GetAvailabilityAtTime(date time.Time) (bool, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	for _, v := range db.DoctorAvailibities {
@@ -40,7 +53,7 @@ func (db availabilityDB) GetAvailabilityAtTime(date time.Time) (bool, error) {
 	return false, errors.New("No available slots at the time")
 }
 
-func (db *availabilityDB) RemoveAvailability(ID string) {
+func (db *InMemoryAvailabilityDB) DeleteAvailability(ID string) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 
@@ -53,7 +66,7 @@ func (db *availabilityDB) RemoveAvailability(ID string) {
 	db.DoctorAvailibities = filteredAvailabilities
 }
 
-func (db availabilityDB) ListAvailability() ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) ListAvailability() ([]schema.DoctorAvailability, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 
@@ -64,7 +77,7 @@ func (db availabilityDB) ListAvailability() ([]schema.DoctorAvailability, error)
 	}
 }
 
-func (db availabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvailability, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	now := time.Now()
@@ -77,7 +90,7 @@ func (db availabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvailability
 	return futureAvailabilities, nil
 }
 
-func (db availabilityDB) CancelAppointmentAtTime(availabilityTime time.Time) ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) CancelAppointmentAtTime(availabilityTime time.Time) ([]schema.DoctorAvailability, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	var filteredAvailabilities []schema.DoctorAvailability
@@ -89,7 +102,7 @@ func (db availabilityDB) CancelAppointmentAtTime(availabilityTime time.Time) ([]
 	return filteredAvailabilities, nil
 }
 
-func (db availabilityDB) CancelAppointmentById(ID string) ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) CancelAppointmentById(ID string) ([]schema.DoctorAvailability, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	var filteredAvailabilities []schema.DoctorAvailability
@@ -98,24 +111,5 @@ func (db availabilityDB) CancelAppointmentById(ID string) ([]schema.DoctorAvaila
 			filteredAvailabilities = append(filteredAvailabilities, v)
 		}
 	}
-	return filteredAvailabilities, nil
-}
-
-func (db availabilityDB) ConfirmAppointmentById(ID string) ([]schema.DoctorAvailability, error) {
-	db.Mutex.Lock()
-	defer db.Mutex.Unlock()
-	var targetedAvailabilityToConfirm schema.DoctorAvailability
-	var filteredAvailabilities []schema.DoctorAvailability
-	for _, v := range db.DoctorAvailibities {
-		if v.ID != ID {
-			filteredAvailabilities = append(filteredAvailabilities, v)
-		} else {
-			targetedAvailabilityToConfirm = v
-		}
-	}
-	confirmAppointment.NotifyDoctorOfConfirmation(targetedAvailabilityToConfirm)
-	confirmAppointment.NotifyPatientOfConfirmation(targetedAvailabilityToConfirm)
-
-	db.DoctorAvailibities = filteredAvailabilities
 	return filteredAvailabilities, nil
 }
