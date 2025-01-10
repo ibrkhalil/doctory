@@ -2,68 +2,72 @@ package appointmentBooking
 
 import (
 	"errors"
+
+	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-func NewInMemoryDB() *appointmentBookingDB {
-	return &appointmentBookingDB{
-		appointments: make(map[string]Appointment),
-	}
+type appointmentSlotsDB struct {
+	*schema.AppointmentBookingDB
 }
 
-func (db *appointmentBookingDB) CreateAppointment(appointment Appointment) error {
-	db.atomicMux.Lock()
-	defer db.atomicMux.Unlock()
+func NewInMemoryAppointmentSlotsDB() *appointmentSlotsDB {
+	return &appointmentSlotsDB{}
+}
 
-	if _, exists := db.appointments[appointment.ID]; exists {
+func (db *appointmentSlotsDB) CreateAppointment(appointment schema.AppointmentSlot) error {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
+
+	if _, exists := db.AppointmentSlots[appointment.ID]; exists {
 		return errors.New("appointment already exists")
 	}
 
-	db.appointments[appointment.ID] = appointment
+	db.AppointmentSlots[appointment.ID] = appointment
 	return nil
 }
 
-func (db *appointmentBookingDB) GetAppointment(id string) (Appointment, error) {
-	db.atomicMux.Lock()
-	defer db.atomicMux.Unlock()
+func (db *appointmentSlotsDB) GetAppointment(id string) (schema.AppointmentSlot, error) {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
 
-	appointment, exists := db.appointments[id]
+	appointment, exists := db.AppointmentSlots[id]
 	if !exists {
-		return Appointment{}, errors.New("appointment not found")
+		return schema.AppointmentSlot{}, errors.New("appointment not found")
 	}
 
 	return appointment, nil
 }
 
-func (db *appointmentBookingDB) UpdateAppointment(id string, updated Appointment) error {
-	db.atomicMux.Lock()
-	defer db.atomicMux.Unlock()
+func (db *appointmentSlotsDB) UpdateAppointment(id string, updated schema.AppointmentSlot) error {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
 
-	if _, exists := db.appointments[id]; !exists {
+	if _, exists := db.AppointmentSlots[id]; !exists {
 		return errors.New("appointment not found")
 	}
 
-	db.appointments[id] = updated
+	db.AppointmentSlots[id] = updated
 	return nil
 }
 
-func (db *appointmentBookingDB) DeleteAppointment(id string) error {
-	db.atomicMux.Lock()
-	defer db.atomicMux.Unlock()
+func (db *appointmentSlotsDB) DeleteAppointment(id string) error {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
 
-	if _, exists := db.appointments[id]; !exists {
+	if _, exists := db.AppointmentSlots[id]; !exists {
 		return errors.New("appointment not found")
 	}
 
-	delete(db.appointments, id)
+	delete(db.AppointmentSlots, id)
 	return nil
 }
 
-func (db *appointmentBookingDB) ListAppointments() []Appointment {
-	db.atomicMux.Lock()
-	defer db.atomicMux.Unlock()
+func (db *appointmentSlotsDB) ListAppointments() []schema.AppointmentSlot {
+	db.Mutex.Lock()
+	defer db.Mutex.Unlock()
 
-	appointments := make([]Appointment, 0, len(db.appointments))
-	for _, appointment := range db.appointments {
+	appointments := make([]schema.AppointmentSlot, 0, len(db.AppointmentSlots))
+	for _, appointment := range db.AppointmentSlots {
 		appointments = append(appointments, appointment)
 	}
 

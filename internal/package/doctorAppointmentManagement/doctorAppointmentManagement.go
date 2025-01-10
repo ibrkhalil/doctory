@@ -2,6 +2,6 @@ package doctorAppointmentManagement
 
 import "github.com/gin-gonic/gin"
 
-func InitModule(ginInstanceEngine *gin.Engine) {
-	RegisterRoutes(ginInstanceEngine)
+func InitModule(ginEngineInstance *gin.Engine) {
+	RegisterRoutes(ginEngineInstance)
 }

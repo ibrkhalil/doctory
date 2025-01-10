@@ -16,26 +16,26 @@ func RegisterRoutes(router *gin.Engine) {
 	}
 }
 
-func createAppointment(c *gin.Context) {
-	appointmentToSave := CreateAppointmentFromRequest(c)
-	AppointmentBookingDB.CreateAppointment(appointmentToSave)
-	c.JSON(http.StatusCreated, appointmentToSave)
+func createAppointment(ctx *gin.Context) {
+	appointmentToSave := CreateAppointmentFromRequest(ctx)
+	AppointmentSlotsDB.CreateAppointment(appointmentToSave)
+	ctx.JSON(http.StatusCreated, appointmentToSave)
 }
 
-func getAppointment(c *gin.Context) {
-	appointmentToReturn := CreateAppointmentFromRequest(c)
-	AppointmentBookingDB.GetAppointment(appointmentToReturn.ID)
-	c.JSON(http.StatusCreated, appointmentToReturn)
+func getAppointment(ctx *gin.Context) {
+	appointmentToReturn := CreateAppointmentFromRequest(ctx)
+	AppointmentSlotsDB.GetAppointment(appointmentToReturn.ID)
+	ctx.JSON(http.StatusCreated, appointmentToReturn)
 }
 
-func updateAppointment(c *gin.Context) {
-	updatedAppointment := CreateAppointmentFromRequest(c)
-	AppointmentBookingDB.UpdateAppointment(updatedAppointment.ID, updatedAppointment)
-	c.JSON(http.StatusCreated, updatedAppointment)
+func updateAppointment(ctx *gin.Context) {
+	updatedAppointment := CreateAppointmentFromRequest(ctx)
+	AppointmentSlotsDB.UpdateAppointment(updatedAppointment.ID, updatedAppointment)
+	ctx.JSON(http.StatusCreated, updatedAppointment)
 }
 
-func deleteAppointment(c *gin.Context) {
-	deletedAppointment := CreateAppointmentFromRequest(c)
-	AppointmentBookingDB.DeleteAppointment(deletedAppointment.ID)
-	c.JSON(http.StatusCreated, deletedAppointment)
+func deleteAppointment(ctx *gin.Context) {
+	deletedAppointment := CreateAppointmentFromRequest(ctx)
+	AppointmentSlotsDB.DeleteAppointment(deletedAppointment.ID)
+	ctx.JSON(http.StatusCreated, deletedAppointment)
 }

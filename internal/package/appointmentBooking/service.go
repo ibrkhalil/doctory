@@ -5,15 +5,16 @@ import (
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-func Start(ginInstanceEngine *gin.Engine) {
-	InitModule(ginInstanceEngine)
+func Start(ginEngineInstance *gin.Engine) {
+	InitModule(ginEngineInstance)
 }
 
-func CreateAppointmentFromRequest(c *gin.Context) Appointment {
-	bodyAsByteArray, _ := ioutil.ReadAll(c.Request.Body)
-	var jsonMap Appointment
-	json.Unmarshal(bodyAsByteArray, &jsonMap)
-	return jsonMap
+func CreateAppointmentFromRequest(ctx *gin.Context) schema.AppointmentSlot {
+	bodyAsByteArray, _ := ioutil.ReadAll(ctx.Request.Body)
+	var appointmentSlot schema.AppointmentSlot
+	json.Unmarshal(bodyAsByteArray, &appointmentSlot)
+	return appointmentSlot
 }
