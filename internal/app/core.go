@@ -1,5 +1,10 @@
-package app
+package main
 
-func initApp() {
-	NewAppointmentBookingDB()
+import (
+	"github.com/ibrkhalil/doctory/internal/package/appointmentBooking"
+)
+
+func main() {
+	appointmentBooking.InitModule()
+	confir
 }

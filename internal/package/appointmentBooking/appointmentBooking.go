@@ -1,6 +1,5 @@
 package appointmentBooking
 
-func init() {
+func InitModule() {
 	NewAppointmentBookingDB()
-
 }
