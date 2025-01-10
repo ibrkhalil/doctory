@@ -6,11 +6,10 @@ import (
 )
 
 type Appointment struct {
-	ID        string
-	PatientID string
-	DoctorID  string
-	StartTime time.Time
-	EndTime   time.Time
+	ID          string
+	PatientID   string
+	PatientName string
+	ReservedAt  time.Time
 }
 
 type appointmentBookingDB struct {

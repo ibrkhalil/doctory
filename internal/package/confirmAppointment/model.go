@@ -2,12 +2,12 @@ package confirmAppointment
 
 import "sync"
 
-type Appointment struct {
+type AppointmentConfirmation struct {
 	ID     string
 	Status string
 }
 
 type InMemoryDB struct {
-	appointments map[string]Appointment
+	appointments map[string]AppointmentConfirmation
 	mu           sync.Mutex
 }

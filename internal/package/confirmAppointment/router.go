@@ -16,12 +16,12 @@ func RegisterRoutes(router *gin.Engine) {
 
 func addAppointment(c *gin.Context) {
 	appointmentToConfirm := CreateAppointmentFromRequest(c)
-	ConfirmAppointmentDB.ConfirmAppointment(appointmentToConfirm.ID)
+	ConfirmAppointmentDB.AddAppointment(appointmentToConfirm)
 	c.JSON(http.StatusCreated, appointmentToConfirm)
 }
 
 func ConfirmAppointment(c *gin.Context) {
 	appointmentToAdd := CreateAppointmentFromRequest(c)
-	ConfirmAppointmentDB.AddAppointment(appointmentToAdd)
+	ConfirmAppointmentDB.ConfirmAppointment(appointmentToAdd.ID)
 	c.JSON(http.StatusCreated, appointmentToAdd)
 }

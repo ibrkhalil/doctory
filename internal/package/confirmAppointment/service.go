@@ -11,9 +11,9 @@ func Start(ginInstanceEngine *gin.Engine) {
 	InitModule(ginInstanceEngine)
 }
 
-func CreateAppointmentFromRequest(c *gin.Context) Appointment {
+func CreateAppointmentFromRequest(c *gin.Context) AppointmentConfirmation {
 	bodyAsByteArray, _ := ioutil.ReadAll(c.Request.Body)
-	var jsonMap Appointment
+	var jsonMap AppointmentConfirmation
 	json.Unmarshal(bodyAsByteArray, &jsonMap)
 	return jsonMap
 }
