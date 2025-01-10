@@ -1,5 +1,5 @@
 package confirmAppointment
 
-func start() {
+func Start() {
 	InitModule()
 }

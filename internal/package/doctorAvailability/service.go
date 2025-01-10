@@ -1,5 +1,5 @@
 package doctorAvailability
 
-func start() {
+func Start() {
 	InitModule()
 }

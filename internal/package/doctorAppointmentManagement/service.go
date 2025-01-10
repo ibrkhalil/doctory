@@ -1,5 +1,5 @@
 package doctorAppointmentManagement
 
-func start() {
+func Start() {
 	InitModule()
 }
