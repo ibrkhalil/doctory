@@ -8,6 +8,6 @@ type Appointment struct {
 }
 
 type InMemoryDB struct {
-	appointments map[string]*Appointment
+	appointments map[string]Appointment
 	mu           sync.Mutex
 }

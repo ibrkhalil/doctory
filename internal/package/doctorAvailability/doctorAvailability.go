@@ -1,4 +1,4 @@
-package appointmentBooking
+package doctorAvailability
 
 import "github.com/gin-gonic/gin"
 
@@ -6,4 +6,4 @@ func InitModule(ginInstanceEngine *gin.Engine) {
 	RegisterRoutes(ginInstanceEngine)
 }
 
-var AppointmentBookingDB = NewInMemoryDB()
+var DoctorAvailabilityDB = NewInMemoryDB()

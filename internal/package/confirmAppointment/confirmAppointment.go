@@ -2,8 +2,8 @@ package confirmAppointment
 
 import "github.com/gin-gonic/gin"
 
-func InitModule() {
-	NewInMemoryDB()
-	r := gin.Default()
-	RegisterRoutes(r)
+func InitModule(ginInstanceEngine *gin.Engine) {
+	RegisterRoutes(ginInstanceEngine)
 }
+
+var ConfirmAppointmentDB = NewInMemoryDB()

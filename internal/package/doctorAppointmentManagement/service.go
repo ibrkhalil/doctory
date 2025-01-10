@@ -1,5 +1,7 @@
 package doctorAppointmentManagement
 
-func Start() {
-	InitModule()
+import "github.com/gin-gonic/gin"
+
+func Start(ginInstanceEngine *gin.Engine) {
+	InitModule(ginInstanceEngine)
 }

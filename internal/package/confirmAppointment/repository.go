@@ -6,7 +6,7 @@ import (
 
 func NewInMemoryDB() *InMemoryDB {
 	return &InMemoryDB{
-		appointments: make(map[string]*Appointment),
+		appointments: make(map[string]Appointment),
 	}
 }
 
@@ -27,7 +27,7 @@ func (db *InMemoryDB) ConfirmAppointment(id string) error {
 	return nil
 }
 
-func (db *InMemoryDB) AddAppointment(appointment *Appointment) {
+func (db *InMemoryDB) AddAppointment(appointment Appointment) {
 	db.mu.Lock()
 	defer db.mu.Unlock()
 
