@@ -1,5 +1,7 @@
 package cmd
 
-func startApp() {
+import "github.com/ibrkhalil/doctory/internal/package/appointmentBooking"
 
+func StartApp() {
+	appointmentBooking.InitModule()
 }

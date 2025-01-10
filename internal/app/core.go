@@ -1,10 +1,5 @@
-package main
-
-import (
-	"github.com/ibrkhalil/doctory/internal/package/appointmentBooking"
-)
+package app
 
 func main() {
-	appointmentBooking.InitModule()
-	confir
+	Start()
 }

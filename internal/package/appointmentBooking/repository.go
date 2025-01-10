@@ -4,7 +4,7 @@ import (
 	"errors"
 )
 
-func NewAppointmentBookingDB() *appointmentBookingDB {
+func NewInMemoryDB() *appointmentBookingDB {
 	return &appointmentBookingDB{
 		appointments: make(map[string]Appointment),
 	}

@@ -1,5 +1,9 @@
 package appointmentBooking
 
+import "github.com/gin-gonic/gin"
+
 func InitModule() {
-	NewAppointmentBookingDB()
+	NewInMemoryDB()
+	r := gin.Default()
+	RegisterRoutes(r)
 }
