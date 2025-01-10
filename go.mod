@@ -1,4 +1,4 @@
-module doctory
+module github.com/ibrkhalil/doctory
 
 go 1.21.0
 
