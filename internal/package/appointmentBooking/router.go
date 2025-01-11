@@ -19,8 +19,14 @@ func createAppointment(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, appointmentToSave)
 	}
-	CreateAppointment(appointmentToSave)
-	ctx.JSON(http.StatusCreated, appointmentToSave)
+	didCreateAppointment := CreateAppointment(appointmentToSave)
+	var message string
+	if didCreateAppointment {
+		message = "Succesfully created an appointment"
+	} else {
+		message = "No available appointments found"
+	}
+	ctx.JSON(http.StatusCreated, gin.H{"message": message})
 }
 
 func listAppointments(ctx *gin.Context) {
