@@ -1,4 +1,4 @@
-package doctorAvailabilitySlot
+package doctorAppointmentManagement
 
 import (
 	"errors"
@@ -16,7 +16,7 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func listAppointmentSlots(ctx *gin.Context) {
-	slots, err := AvailabilityDB.ListAppointmentSlots()
+	slots, err := ListAppointmentSlots()
 	if err != nil {
 		errors.New("An error happened when listing appointments ")
 	}
@@ -28,7 +28,7 @@ func createAppointmentSlot(ctx *gin.Context) {
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
 	} else {
-		AvailabilityDB.AddAvailabilitySlot(req)
+		AddAvailabilitySlot(req)
 		ctx.JSON(http.StatusCreated, gin.H{"message": "Appointment created"})
 	}
 }

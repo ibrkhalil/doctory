@@ -1,21 +1,16 @@
 package schema
 
 import (
-	"sync"
 	"time"
 )
 
 type AppointmentSlot struct {
-	ID          string    `json:"id"`
-	SlotId      string    `json:"slotId"`
-	PatientID   string    `json:"patientId"`
-	PatientName string    `json:"patientName"`
-	ReservedAt  time.Time `json:"reservedAt"`
-}
-
-type AppointmentBookingDB struct {
-	Mutex            sync.Mutex
-	AppointmentSlots map[string]AppointmentSlot `json:"appointments"`
+	ID           string    `json:"id"`
+	SlotId       string    `json:"slotId"`
+	PatientID    string    `json:"patientId"`
+	PatientName  string    `json:"patientName"`
+	ReservedAt   time.Time `json:"reservedAt"`
+	StartingTime time.Time `json:"startingTime"`
 }
 
 type DoctorAvailabilitySlot struct {
@@ -26,9 +21,4 @@ type DoctorAvailabilitySlot struct {
 	IsReserved bool      `json:"isReserved"`
 	Cost       float32   `json:"cost"`
 	ToTime     time.Time `json:"toTime"`
-}
-
-type DoctorAvailabilitySlotInMemoryDB struct {
-	DoctorAvailibities []DoctorAvailabilitySlot `json:"doctorAvailibities"`
-	Mutex              sync.RWMutex
 }

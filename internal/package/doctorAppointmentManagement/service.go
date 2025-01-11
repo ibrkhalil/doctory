@@ -1,4 +1,4 @@
-package doctorAvailabilitySlot
+package doctorAppointmentManagement
 
 import (
 	"encoding/json"
