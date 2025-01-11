@@ -6,3 +6,9 @@ Sample req
         "time": "2025-01-13T11:20:11.564832+02:00",
         "cost": 50
     }
+
+
+    {
+        "patientId": "1",
+        "patientName": "Mega"
+    }

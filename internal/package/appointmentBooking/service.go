@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
@@ -14,11 +15,10 @@ func Start(ginEngineInstance *gin.Engine) {
 }
 
 func validateAppointmentFromRequest(appointmentSlot schema.AppointmentSlot) bool {
-	if appointmentSlot.ReservedAt.IsZero() || len(appointmentSlot.PatientID) == 0 ||
-		len(appointmentSlot.PatientName) == 0 || len(appointmentSlot.ID) == 0 ||
-		len(appointmentSlot.SlotId) == 0 {
+	if len(appointmentSlot.PatientID) == 0 || len(appointmentSlot.PatientName) == 0 {
 		return false
 	}
+
 	return true
 }
 
@@ -26,6 +26,7 @@ func CreateAppointmentFromRequest(ctx *gin.Context) (schema.AppointmentSlot, err
 	bodyAsByteArray, _ := ioutil.ReadAll(ctx.Request.Body)
 	var appointmentSlot schema.AppointmentSlot
 	json.Unmarshal(bodyAsByteArray, &appointmentSlot)
+	appointmentSlot.ID = uuid.NewString()
 	isValidRequest := validateAppointmentFromRequest(appointmentSlot)
 	if isValidRequest {
 		return appointmentSlot, nil

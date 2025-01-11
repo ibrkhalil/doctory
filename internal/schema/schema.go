@@ -4,13 +4,22 @@ import (
 	"time"
 )
 
+type AppointmentState int
+
+const (
+	DEFAULT_APPOINTMENT_STATE AppointmentState = iota
+	CONFIRMED_APPOINTMENT_STATE
+	CANCELLED_APPOINTMENT_STATE
+)
+
 type AppointmentSlot struct {
-	ID           string    `json:"id"`
-	SlotId       string    `json:"slotId"`
-	PatientID    string    `json:"patientId"`
-	PatientName  string    `json:"patientName"`
-	ReservedAt   time.Time `json:"reservedAt"`
-	StartingTime time.Time `json:"startingTime"`
+	ID           string           `json:"id"`
+	SlotId       string           `json:"slotId"`
+	PatientID    string           `json:"patientId"`
+	PatientName  string           `json:"patientName"`
+	ReservedAt   time.Time        `json:"reservedAt"`
+	StartingTime time.Time        `json:"startingTime"`
+	State        AppointmentState `json:"state"`
 }
 
 type DoctorAvailabilitySlot struct {

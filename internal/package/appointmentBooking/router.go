@@ -10,7 +10,7 @@ func RegisterRoutes(router *gin.Engine) {
 	appointmentGroup := router.Group("/appointments")
 	{
 		appointmentGroup.POST("/", createAppointment)
-		appointmentGroup.GET("/:id", listAppointments)
+		appointmentGroup.GET("/", listAppointments)
 	}
 }
 
@@ -25,5 +25,5 @@ func createAppointment(ctx *gin.Context) {
 
 func listAppointments(ctx *gin.Context) {
 	appointmentList := ListAppointments()
-	ctx.JSON(http.StatusCreated, appointmentList)
+	ctx.JSON(http.StatusOK, appointmentList)
 }

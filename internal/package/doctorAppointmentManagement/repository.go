@@ -22,11 +22,11 @@ func AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 func GetAvailabilityAtTime(date time.Time) (bool, error) {
 	db := db.GetInstance()
 	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
-	for _, v := range availabilitySlots {
-		if date.Unix() > v.Time.Unix() &&
-			date.Unix() < v.ToTime.Unix() {
+	for _, availabilitySlot := range availabilitySlots {
+		if date.Unix() > availabilitySlot.Time.Unix() &&
+			date.Unix() < availabilitySlot.ToTime.Unix() {
 			// Within range
-			return v.IsReserved, nil
+			return availabilitySlot.IsReserved, nil
 
 		}
 	}
@@ -44,39 +44,25 @@ func ListAppointmentSlots() ([]schema.DoctorAvailabilitySlot, error) {
 
 }
 
-func ViewUpcomingAppointments() ([]schema.DoctorAvailabilitySlot, error) {
+func ViewUpcomingAppointments() ([]schema.AppointmentSlot, error) {
 	db := db.GetInstance()
-	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
+	appointments := db.GetAllAppointmentSlots()
 	now := time.Now()
-	var futureAvailabilities []schema.DoctorAvailabilitySlot
-	for _, availabilitySlot := range availabilitySlots {
-		if availabilitySlot.Time.After(now) && availabilitySlot.IsReserved {
-			futureAvailabilities = append(futureAvailabilities, availabilitySlot)
+	var futureAvailabilities []schema.AppointmentSlot
+	for _, appointment := range appointments {
+		if appointment.StartingTime.After(now) && !appointment.ReservedAt.IsZero() {
+			futureAvailabilities = append(futureAvailabilities, appointment)
 		}
 	}
 	return futureAvailabilities, nil
 }
 
-func CancelAppointmentAtTime(availabilityTime time.Time) ([]schema.DoctorAvailabilitySlot, error) {
+func CancelAppointmentById(ID string) bool {
 	db := db.GetInstance()
-	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
-	var filteredAvailabilities []schema.DoctorAvailabilitySlot
-	for _, v := range availabilitySlots {
-		if v.Time != availabilityTime {
-			filteredAvailabilities = append(filteredAvailabilities, v)
-		}
-	}
-	return filteredAvailabilities, nil
+	return db.CancelAppointmentById(ID)
 }
 
-func CancelAppointmentById(ID string) ([]schema.DoctorAvailabilitySlot, error) {
+func ConfirmAppointmentById(ID string) bool {
 	db := db.GetInstance()
-	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
-	var filteredAvailabilities []schema.DoctorAvailabilitySlot
-	for _, v := range availabilitySlots {
-		if v.ID != ID {
-			filteredAvailabilities = append(filteredAvailabilities, v)
-		}
-	}
-	return filteredAvailabilities, nil
+	return db.ConfirmAppointmentById(ID)
 }

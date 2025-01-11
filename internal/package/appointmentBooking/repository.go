@@ -1,8 +1,9 @@
 package appointmentBooking
 
 import (
-	"errors"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/ibrkhalil/doctory/internal/db"
 	"github.com/ibrkhalil/doctory/internal/package/confirmAppointment"
 	"github.com/ibrkhalil/doctory/internal/schema"
@@ -14,6 +15,7 @@ func reserveAvailabilitySlotAndNotify(availabilitySlot schema.DoctorAvailability
 	confirmAppointment.NotifyDoctorOfAppointmentBooking(appointment)
 	confirmAppointment.NotifyPatientOfAppointmentBooking(appointment)
 	appointment.StartingTime = availabilitySlot.Time
+	appointment.ReservedAt = time.Now()
 	db.SetAppointmentSlots(appointment.ID, appointment)
 	db.SetDoctorAvailabilitySlot(availabilitySlot.ID, availabilitySlot)
 
@@ -21,18 +23,14 @@ func reserveAvailabilitySlotAndNotify(availabilitySlot schema.DoctorAvailability
 
 func CreateAppointment(appointment schema.AppointmentSlot) error {
 	db := db.GetInstance()
-	_, alreadyExists := db.GetAppointmentSlotByKey(appointment.ID)
-	if alreadyExists {
-		return errors.New("Appointment already alreadyExists")
-	} else {
-		doctorAvailabilitySlots := db.GetAllDoctorAvailabilitySlots()
-		for _, availabilitySlot := range doctorAvailabilitySlots {
-			if !availabilitySlot.IsReserved {
-				reserveAvailabilitySlotAndNotify(availabilitySlot, appointment)
-			}
+	appointment.ID = uuid.NewString()
+	doctorAvailabilitySlots := db.GetAllDoctorAvailabilitySlots()
+	for _, availabilitySlot := range doctorAvailabilitySlots {
+		if !availabilitySlot.IsReserved {
+			reserveAvailabilitySlotAndNotify(availabilitySlot, appointment)
 		}
-		return nil
 	}
+	return nil
 }
 
 func ListAppointments() []schema.AppointmentSlot {

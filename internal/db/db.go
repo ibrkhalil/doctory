@@ -9,7 +9,7 @@ import (
 type SingletonDB struct {
 	doctorAvailabilitySlot map[string]schema.DoctorAvailabilitySlot
 	appointmentSlots       map[string]schema.AppointmentSlot
-	mutex                  sync.RWMutex
+	mutex                  sync.Mutex
 }
 
 var singletonInstance *SingletonDB
@@ -38,35 +38,67 @@ func (db *SingletonDB) SetAppointmentSlots(key string, value schema.AppointmentS
 }
 
 func (db *SingletonDB) GetDoctorAvailabilitySlotByKey(key string) (schema.DoctorAvailabilitySlot, bool) {
-	db.mutex.RLock()
-	defer db.mutex.RUnlock()
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
 	value, alreadyExists := db.doctorAvailabilitySlot[key]
 	return value, alreadyExists
 }
 
 func (db *SingletonDB) GetAppointmentSlotByKey(key string) (schema.AppointmentSlot, bool) {
-	db.mutex.RLock()
-	defer db.mutex.RUnlock()
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
 	value, alreadyExists := db.appointmentSlots[key]
 	return value, alreadyExists
 }
 
 func (db *SingletonDB) GetAllDoctorAvailabilitySlots() []schema.DoctorAvailabilitySlot {
-	db.mutex.RLock()
-	defer db.mutex.RUnlock()
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
 	var response []schema.DoctorAvailabilitySlot
-	for _, v := range db.doctorAvailabilitySlot {
-		response = append(response, v)
+	for _, availabilitySlot := range db.doctorAvailabilitySlot {
+		response = append(response, availabilitySlot)
 	}
 	return response
 }
 
 func (db *SingletonDB) GetAllAppointmentSlots() []schema.AppointmentSlot {
-	db.mutex.RLock()
-	defer db.mutex.RUnlock()
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
 	var response []schema.AppointmentSlot
-	for _, v := range db.appointmentSlots {
-		response = append(response, v)
+	for _, appointmentSlot := range db.appointmentSlots {
+		response = append(response, appointmentSlot)
 	}
 	return response
+}
+
+func (db *SingletonDB) CancelAppointmentById(key string) bool {
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
+	alreadyExistingAppointment := schema.AppointmentSlot{
+		ID:           db.appointmentSlots[key].ID,
+		SlotId:       db.appointmentSlots[key].SlotId,
+		PatientID:    db.appointmentSlots[key].PatientID,
+		PatientName:  db.appointmentSlots[key].PatientName,
+		ReservedAt:   db.appointmentSlots[key].ReservedAt,
+		StartingTime: db.appointmentSlots[key].StartingTime,
+		State:        schema.CANCELLED_APPOINTMENT_STATE,
+	}
+	db.appointmentSlots[key] = alreadyExistingAppointment
+	return true
+}
+
+func (db *SingletonDB) ConfirmAppointmentById(key string) bool {
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
+	alreadyExistingAppointment := schema.AppointmentSlot{
+		ID:           db.appointmentSlots[key].ID,
+		SlotId:       db.appointmentSlots[key].SlotId,
+		PatientID:    db.appointmentSlots[key].PatientID,
+		PatientName:  db.appointmentSlots[key].PatientName,
+		ReservedAt:   db.appointmentSlots[key].ReservedAt,
+		StartingTime: db.appointmentSlots[key].StartingTime,
+		State:        schema.CONFIRMED_APPOINTMENT_STATE,
+	}
+	db.appointmentSlots[key] = alreadyExistingAppointment
+	return true
 }
