@@ -1,4 +1,4 @@
-package doctorAvailability
+package doctorAvailabilitySlot
 
 import (
 	"errors"
@@ -8,34 +8,35 @@ import (
 )
 
 type InMemoryAvailabilityDB struct {
-	*schema.DoctorAvailabilityInMemoryDB
+	*schema.DoctorAvailabilitySlotInMemoryDB
 }
 
 func NewInMemoryAvailabilityDB() *InMemoryAvailabilityDB {
 	return &InMemoryAvailabilityDB{
-		DoctorAvailabilityInMemoryDB: &schema.DoctorAvailabilityInMemoryDB{
-			DoctorAvailibities: []schema.DoctorAvailability{},
+		DoctorAvailabilitySlotInMemoryDB: &schema.DoctorAvailabilitySlotInMemoryDB{
+			DoctorAvailibities: []schema.DoctorAvailabilitySlot{},
 		},
 	}
 }
 
-func (db InMemoryAvailabilityDB) AddAvailability(availability schema.DoctorAvailability) error {
+func (db InMemoryAvailabilityDB) AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
-	availability.ToTime = availability.Time.Add(time.Hour)
 	db.DoctorAvailibities = append(db.DoctorAvailibities, availability)
 	return nil
 }
 
-func (db InMemoryAvailabilityDB) UpdateAvailability(availability schema.DoctorAvailability) error {
+func (db InMemoryAvailabilityDB) UpdateAvailability(availability schema.DoctorAvailabilitySlot) error {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
+	var res []schema.DoctorAvailabilitySlot
 	for _, v := range db.DoctorAvailibities {
 		if v.ID == availability.ID {
-			v = availability
+			res = append(res, availability)
+		} else {
+			res = append(res, v)
 		}
 	}
-
 	return nil
 }
 
@@ -57,7 +58,7 @@ func (db *InMemoryAvailabilityDB) DeleteAvailability(ID string) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 
-	var filteredAvailabilities []schema.DoctorAvailability
+	var filteredAvailabilities []schema.DoctorAvailabilitySlot
 	for _, v := range db.DoctorAvailibities {
 		if v.ID != ID {
 			filteredAvailabilities = append(filteredAvailabilities, v)
@@ -66,7 +67,7 @@ func (db *InMemoryAvailabilityDB) DeleteAvailability(ID string) {
 	db.DoctorAvailibities = filteredAvailabilities
 }
 
-func (db InMemoryAvailabilityDB) ListAvailability() ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) ListAppointmentSlots() ([]schema.DoctorAvailabilitySlot, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 
@@ -75,13 +76,14 @@ func (db InMemoryAvailabilityDB) ListAvailability() ([]schema.DoctorAvailability
 	} else {
 		return nil, errors.New("No availabilities exist for the doctor!")
 	}
+
 }
 
-func (db InMemoryAvailabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvailabilitySlot, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
 	now := time.Now()
-	var futureAvailabilities []schema.DoctorAvailability
+	var futureAvailabilities []schema.DoctorAvailabilitySlot
 	for _, v := range db.DoctorAvailibities {
 		if v.Time.After(now) {
 			futureAvailabilities = append(futureAvailabilities, v)
@@ -90,10 +92,10 @@ func (db InMemoryAvailabilityDB) ViewUpcomingAppointments() ([]schema.DoctorAvai
 	return futureAvailabilities, nil
 }
 
-func (db InMemoryAvailabilityDB) CancelAppointmentAtTime(availabilityTime time.Time) ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) CancelAppointmentAtTime(availabilityTime time.Time) ([]schema.DoctorAvailabilitySlot, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
-	var filteredAvailabilities []schema.DoctorAvailability
+	var filteredAvailabilities []schema.DoctorAvailabilitySlot
 	for _, v := range db.DoctorAvailibities {
 		if v.Time != availabilityTime {
 			filteredAvailabilities = append(filteredAvailabilities, v)
@@ -102,10 +104,10 @@ func (db InMemoryAvailabilityDB) CancelAppointmentAtTime(availabilityTime time.T
 	return filteredAvailabilities, nil
 }
 
-func (db InMemoryAvailabilityDB) CancelAppointmentById(ID string) ([]schema.DoctorAvailability, error) {
+func (db InMemoryAvailabilityDB) CancelAppointmentById(ID string) ([]schema.DoctorAvailabilitySlot, error) {
 	db.Mutex.Lock()
 	defer db.Mutex.Unlock()
-	var filteredAvailabilities []schema.DoctorAvailability
+	var filteredAvailabilities []schema.DoctorAvailabilitySlot
 	for _, v := range db.DoctorAvailibities {
 		if v.ID != ID {
 			filteredAvailabilities = append(filteredAvailabilities, v)

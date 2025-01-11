@@ -1,4 +1,4 @@
-package doctorAvailability
+package doctorAvailabilitySlot
 
 import "github.com/gin-gonic/gin"
 

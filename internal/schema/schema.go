@@ -18,17 +18,17 @@ type AppointmentBookingDB struct {
 	AppointmentSlots map[string]AppointmentSlot `json:"appointments"`
 }
 
-type DoctorAvailability struct {
+type DoctorAvailabilitySlot struct {
 	ID         string    `json:"id"`
+	Time       time.Time `json:"time"`
 	DoctorID   string    `json:"doctorId"`
 	DoctorName string    `json:"doctorName"`
 	IsReserved bool      `json:"isReserved"`
 	Cost       float32   `json:"cost"`
-	Time       time.Time `json:"time"`
 	ToTime     time.Time `json:"toTime"`
 }
 
-type DoctorAvailabilityInMemoryDB struct {
-	DoctorAvailibities []DoctorAvailability `json:"doctorAvailibities"`
+type DoctorAvailabilitySlotInMemoryDB struct {
+	DoctorAvailibities []DoctorAvailabilitySlot `json:"doctorAvailibities"`
 	Mutex              sync.RWMutex
 }
