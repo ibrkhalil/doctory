@@ -11,10 +11,6 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-func Start(ginEngineInstance *gin.Engine) {
-	InitModule(ginEngineInstance)
-}
-
 func validateAppointmentFromRequest(appointmentSlot schema.AppointmentSlot) bool {
 	if len(appointmentSlot.PatientID) == 0 || len(appointmentSlot.PatientName) == 0 {
 		return false

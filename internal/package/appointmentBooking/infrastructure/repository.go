@@ -1,4 +1,4 @@
-package appointmentBooking
+package infrastructure
 
 import (
 	"time"
@@ -12,6 +12,7 @@ import (
 func reserveAvailabilitySlotAndNotify(db *db.SingletonDB, availabilitySlot schema.DoctorAvailabilitySlot, appointment *schema.AppointmentSlot) error {
 	availabilitySlot.IsReserved = true
 	appointment.StartingTime = availabilitySlot.Time
+	availabilitySlot.ToTime = appointment.StartingTime.Add(time.Hour)
 	appointment.ReservedAt = time.Now()
 
 	errorNotifiyingDoctor := confirmAppointment.NotifyDoctorOfAppointmentBooking(*appointment)

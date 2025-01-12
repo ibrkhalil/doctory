@@ -1,4 +1,4 @@
-package appointmentBooking
+package infrastructure
 
 import (
 	"log"
@@ -54,6 +54,7 @@ func TestListAppointments(t *testing.T) {
 		DoctorName: doctorName,
 		IsReserved: false,
 		Cost:       5,
+		ToTime:     time.Now().Add(2 * time.Hour),
 	}
 	availabilitySlot2 := schema.DoctorAvailabilitySlot{
 		ID:         "2",

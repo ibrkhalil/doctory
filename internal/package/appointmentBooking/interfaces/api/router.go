@@ -1,11 +1,12 @@
-package appointmentBooking
+package api
 
 import (
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ibrkhalil/doctory/internal/package/appointmentBooking"
+	"github.com/ibrkhalil/doctory/internal/package/appointmentBooking/infrastructure"
 )
 
 func RegisterRoutes(router *gin.Engine) {
@@ -17,15 +18,12 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func createAppointment(ctx *gin.Context) {
-	appointmentToSave, err := CreateAppointmentFromRequest(ctx)
+	appointmentToSave, err := appointmentBooking.CreateAppointmentFromRequest(ctx)
 	var response string
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No available appointments found!"})
+		response = "No available appointments found!"
+		ctx.JSON(http.StatusConflict, gin.H{"message": response})
 		return
-	}
-
-	if err != nil {
-		log.Print("Failed creating an appointment")
 	}
 
 	response = "Succesfully created an appointment at " + appointmentToSave.StartingTime.Format(time.RFC822Z)
@@ -33,6 +31,10 @@ func createAppointment(ctx *gin.Context) {
 }
 
 func listAppointments(ctx *gin.Context) {
-	appointmentList := ListAppointments()
+	appointmentList := infrastructure.ListAppointments()
 	ctx.JSON(http.StatusOK, appointmentList)
+}
+
+func InitModule(ginEngineInstance *gin.Engine) {
+	RegisterRoutes(ginEngineInstance)
 }
