@@ -14,7 +14,7 @@ const (
 
 type AppointmentSlot struct {
 	ID           string           `json:"id"`
-	SlotId       string           `json:"slotId"`
+	SlotId       int              `json:"slotId"`
 	PatientID    string           `json:"patientId"`
 	PatientName  string           `json:"patientName"`
 	ReservedAt   time.Time        `json:"reservedAt"`

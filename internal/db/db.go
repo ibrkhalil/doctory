@@ -102,3 +102,25 @@ func (db *SingletonDB) ConfirmAppointmentById(key string) bool {
 	db.appointmentSlots[key] = alreadyExistingAppointment
 	return true
 }
+
+type slotId struct {
+	sync.Mutex
+	slotId int
+}
+
+func (slotId *slotId) SlotID() (id int) {
+	slotId.Lock()
+	defer slotId.Unlock()
+
+	id = slotId.slotId
+	slotId.slotId++
+	return
+}
+
+var autoIncrementedId slotId
+
+func NewAppointmentWithAutoIncrementedSlotID() *schema.AppointmentSlot {
+	return &schema.AppointmentSlot{
+		SlotId: autoIncrementedId.SlotID(),
+	}
+}

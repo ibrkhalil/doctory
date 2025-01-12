@@ -9,30 +9,44 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-func reserveAvailabilitySlotAndNotify(db *db.SingletonDB, availabilitySlot schema.DoctorAvailabilitySlot, appointment *schema.AppointmentSlot) {
+func reserveAvailabilitySlotAndNotify(db *db.SingletonDB, availabilitySlot schema.DoctorAvailabilitySlot, appointment *schema.AppointmentSlot) error {
 	availabilitySlot.IsReserved = true
-	appointment.StartingTime = availabilitySlot.Time.UTC()
-	appointment.ReservedAt = time.Now().UTC()
-	confirmAppointment.NotifyDoctorOfAppointmentBooking(*appointment)
-	confirmAppointment.NotifyPatientOfAppointmentBooking(*appointment)
+	appointment.StartingTime = availabilitySlot.Time
+	appointment.ReservedAt = time.Now()
+
+	errorNotifiyingDoctor := confirmAppointment.NotifyDoctorOfAppointmentBooking(*appointment)
+	errorNotifiyingPatient := confirmAppointment.NotifyPatientOfAppointmentBooking(*appointment)
+
+	if errorNotifiyingDoctor != nil {
+		return errorNotifiyingDoctor
+	}
+
+	if errorNotifiyingPatient != nil {
+		return errorNotifiyingPatient
+	}
+
 	db.SetAppointmentSlots(appointment.ID, *appointment)
 	db.SetDoctorAvailabilitySlot(availabilitySlot.ID, availabilitySlot)
 
+	return nil
 }
 
-func CreateAppointment(appointment schema.AppointmentSlot) bool {
+func CreateAppointment(appointment *schema.AppointmentSlot) (bool, error) {
 	db := db.GetInstance()
 	appointment.ID = uuid.NewString()
 	doctorAvailabilitySlots := db.GetAllDoctorAvailabilitySlots()
 	var reservedFlag bool
 	for _, availabilitySlot := range doctorAvailabilitySlots {
 		if !availabilitySlot.IsReserved && !reservedFlag {
-			reserveAvailabilitySlotAndNotify(db, availabilitySlot, &appointment)
+			reservationErrorStatus := reserveAvailabilitySlotAndNotify(db, availabilitySlot, appointment)
+			if reservationErrorStatus != nil {
+				return false, reservationErrorStatus
+			}
 			reservedFlag = true
 		}
 
 	}
-	return reservedFlag
+	return reservedFlag, nil
 }
 
 func ListAppointments() []schema.AppointmentSlot {

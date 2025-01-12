@@ -8,13 +8,37 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
+func inTimeSpan(start, end, check time.Time) bool {
+	if start.Before(end) {
+		return !check.Before(start) && !check.After(end)
+	}
+	if start.Equal(end) {
+		return check.Equal(start)
+	}
+	return !start.After(check) || !end.Before(check)
+}
+
+func availabilityTimeExists(availability schema.DoctorAvailabilitySlot) bool {
+	availabilitySlots := db.GetInstance().GetAllDoctorAvailabilitySlots()
+	for _, availabilitySlot := range availabilitySlots {
+		if inTimeSpan(availabilitySlot.Time, availabilitySlot.ToTime, availability.Time) {
+			return true
+		}
+	}
+	return false
+}
+
 func AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 	db := db.GetInstance()
-	_, alreadyExists := db.GetDoctorAvailabilitySlotByKey(availability.ID)
-	if !alreadyExists {
-		db.SetDoctorAvailabilitySlot(availability.ID, availability)
+	_, idAalreadyExists := db.GetDoctorAvailabilitySlotByKey(availability.ID)
+	if !idAalreadyExists {
+		if !availabilityTimeExists(availability) {
+			db.SetDoctorAvailabilitySlot(availability.ID, availability)
+		} else {
+			return errors.New("Availability slot already taken!")
+		}
 	} else {
-		errors.New("Availability slot already taken!")
+		return errors.New("Availability slot already taken!")
 	}
 	return nil
 }
@@ -33,7 +57,7 @@ func GetAvailabilityAtTime(date time.Time) (bool, error) {
 	return false, errors.New("No available slots at the time")
 }
 
-func ListAppointmentSlots() ([]schema.DoctorAvailabilitySlot, error) {
+func ListAvailabilitySlots() ([]schema.DoctorAvailabilitySlot, error) {
 	db := db.GetInstance()
 	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
 	if len(availabilitySlots) > 0 {

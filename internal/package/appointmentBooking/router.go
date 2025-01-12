@@ -1,7 +1,9 @@
 package appointmentBooking
 
 import (
+	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,17 +18,18 @@ func RegisterRoutes(router *gin.Engine) {
 
 func createAppointment(ctx *gin.Context) {
 	appointmentToSave, err := CreateAppointmentFromRequest(ctx)
+	var response string
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, appointmentToSave)
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "No available appointments found!"})
+		return
 	}
-	didCreateAppointment := CreateAppointment(appointmentToSave)
-	var message string
-	if didCreateAppointment {
-		message = "Succesfully created an appointment"
-	} else {
-		message = "No available appointments found"
+
+	if err != nil {
+		log.Print("Failed creating an appointment")
 	}
-	ctx.JSON(http.StatusCreated, gin.H{"message": message})
+
+	response = "Succesfully created an appointment at " + appointmentToSave.StartingTime.Format(time.RFC822Z)
+	ctx.JSON(http.StatusCreated, gin.H{"message": response})
 }
 
 func listAppointments(ctx *gin.Context) {

@@ -10,25 +10,31 @@ import (
 func RegisterRoutes(router *gin.Engine) {
 	doctorGroup := router.Group("/doctor")
 	{
-		doctorGroup.GET("/appointments", listAppointmentSlots)
-		doctorGroup.POST("/appointments", createAppointmentSlot)
+		doctorGroup.GET("/appointments", listAvailabilitySlots)
+		doctorGroup.POST("/appointments", createAvailabilitySlot)
 	}
 }
 
-func listAppointmentSlots(ctx *gin.Context) {
-	slots, err := ListAppointmentSlots()
+func listAvailabilitySlots(ctx *gin.Context) {
+	slots, err := ListAvailabilitySlots()
 	if err != nil {
 		errors.New("An error happened when listing appointments ")
+	} else {
+		ctx.JSON(http.StatusOK, slots)
 	}
-	ctx.JSON(http.StatusOK, slots)
 }
 
-func createAppointmentSlot(ctx *gin.Context) {
+func createAvailabilitySlot(ctx *gin.Context) {
 	req, err := CreateAvailabilityFromRequest(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
 	} else {
-		AddAvailabilitySlot(req)
-		ctx.JSON(http.StatusCreated, gin.H{"message": "Appointment created"})
+		err := AddAvailabilitySlot(req)
+		if err != nil {
+			ctx.JSON(http.StatusCreated, gin.H{"message": "Availability already taken!"})
+		} else {
+			ctx.JSON(http.StatusCreated, gin.H{"message": "Created availability time!"})
+		}
+
 	}
 }

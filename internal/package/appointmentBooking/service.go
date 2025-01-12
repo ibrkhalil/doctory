@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/ibrkhalil/doctory/internal/db"
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
@@ -24,12 +25,12 @@ func validateAppointmentFromRequest(appointmentSlot schema.AppointmentSlot) bool
 
 func CreateAppointmentFromRequest(ctx *gin.Context) (schema.AppointmentSlot, error) {
 	bodyAsByteArray, _ := ioutil.ReadAll(ctx.Request.Body)
-	var appointmentSlot schema.AppointmentSlot
+	appointmentSlot := db.NewAppointmentWithAutoIncrementedSlotID()
 	json.Unmarshal(bodyAsByteArray, &appointmentSlot)
+	isValidRequest := validateAppointmentFromRequest(*appointmentSlot)
 	appointmentSlot.ID = uuid.NewString()
-	isValidRequest := validateAppointmentFromRequest(appointmentSlot)
 	if isValidRequest {
-		return appointmentSlot, nil
+		return *appointmentSlot, nil
 	} else {
 		return schema.AppointmentSlot{}, errors.New("Invalid Request")
 	}
