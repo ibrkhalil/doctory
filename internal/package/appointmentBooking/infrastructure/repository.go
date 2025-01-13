@@ -21,7 +21,7 @@ func reserveAvailabilitySlotAndNotify(db *db.SingletonDB, availabilitySlot schem
 	appointment.ReservedAt = time.Now()
 
 	errorNotifiyingDoctor := confirmAppointment.NotifyDoctorOfAppointmentBooking(*appointment)
-	errorNotifiyingPatient := confirmAppointment.NotifyPatientOfAppointmentBooking(*appointment)
+	errorNotifiyingPatient := confirmAppointment.NotifyPatientOfAppointmentBooking(*appointment, availabilitySlot.DoctorName)
 
 	if errorNotifiyingDoctor != nil {
 		return errorNotifiyingDoctor

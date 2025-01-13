@@ -15,7 +15,7 @@ func TestCreateAppointment(t *testing.T) {
 	db.GetInstance()
 	defer db.Clear()
 
-	doctorName := "MAHOOOOODZ"
+	doctorName := "Dr. Gregory House"
 	patientName := "Jason Statham"
 	appointment := schema.AppointmentSlot{ID: "1", PatientName: patientName}
 	result, err := CreateAppointment(&appointment)
@@ -53,7 +53,7 @@ func TestListAppointments(t *testing.T) {
 
 	patient1Name := "Mohamed Henedy"
 	patient2Name := "Michael Scofield"
-	doctorName := "MAHOOOOODZ"
+	doctorName := "Dr. Gregory House"
 
 	availabilitySlot1 := schema.DoctorAvailabilitySlot{
 		ID:         "1",
@@ -102,4 +102,84 @@ func TestListAppointments(t *testing.T) {
 	assert.Equal(t, result[0].PatientName, patient1Name)
 	assert.Equal(t, result[1].PatientName, patient2Name)
 	assert.Len(t, result, 2)
+}
+
+func TestConfirmAppoinment(t *testing.T) {
+	db.GetInstance()
+	defer db.Clear()
+
+	doctorName := "Dr. Gregory House"
+	patientName := "Jason Statham"
+	appointment := schema.AppointmentSlot{ID: "1", PatientName: patientName}
+	result, err := CreateAppointment(&appointment)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// There should be an error as there's no availability times available.
+	assert.NotEqual(t, result, nil)
+
+	availabilitySlot1 := schema.DoctorAvailabilitySlot{
+		ID:         "1",
+		Time:       time.Now().Add(time.Hour),
+		DoctorID:   "1",
+		DoctorName: doctorName,
+		IsReserved: false,
+		Cost:       5,
+	}
+
+	// Create availability slot
+	service := repository.NewDoctorAvailabilitySlotController()
+	service.AddAvailabilitySlot(availabilitySlot1)
+
+	appointment2 := schema.AppointmentSlot{ID: "1", PatientName: patientName}
+	_, errCreatingAppointment := CreateAppointment(&appointment2)
+
+	assert.NoError(t, errCreatingAppointment)
+
+	status := service.ConfirmAppointmentById(appointment2.ID)
+
+	appointments := db.GetInstance().GetAllAppointmentSlots()
+	assert.Equal(t, appointments[0].State, schema.CONFIRMED_APPOINTMENT_STATE)
+
+	assert.True(t, status)
+}
+
+func TestCancelAppoinment(t *testing.T) {
+	db.GetInstance()
+	defer db.Clear()
+
+	doctorName := "Dr. Gregory House"
+	patientName := "Jason Statham"
+	appointment := schema.AppointmentSlot{ID: "1", PatientName: patientName}
+	result, err := CreateAppointment(&appointment)
+	if err != nil {
+		t.Errorf("Expected no error, got %v", err)
+	}
+
+	// There should be an error as there's no availability times available.
+	assert.NotEqual(t, result, nil)
+
+	availabilitySlot1 := schema.DoctorAvailabilitySlot{
+		ID:         "1",
+		Time:       time.Now().Add(time.Hour),
+		DoctorID:   "1",
+		DoctorName: doctorName,
+		IsReserved: false,
+		Cost:       5,
+	}
+
+	// Create availability slot
+	service := repository.NewDoctorAvailabilitySlotController()
+	service.AddAvailabilitySlot(availabilitySlot1)
+
+	appointment2 := schema.AppointmentSlot{ID: "1", PatientName: patientName}
+	_, errCreatingAppointment := CreateAppointment(&appointment2)
+
+	assert.NoError(t, errCreatingAppointment)
+
+	status := service.CancelAppointmentById(appointment2.ID)
+	appointments := db.GetInstance().GetAllAppointmentSlots()
+	assert.Equal(t, appointments[0].State, schema.CANCELLED_APPOINTMENT_STATE)
+	assert.True(t, status)
 }
