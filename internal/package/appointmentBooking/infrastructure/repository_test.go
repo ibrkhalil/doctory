@@ -36,7 +36,8 @@ func TestCreateAppointment(t *testing.T) {
 	}
 
 	// Create availability slot
-	repository.AddAvailabilitySlot(availabilitySlot1)
+	service := repository.NewDoctorAvailabilitySlotController()
+	service.AddAvailabilitySlot(availabilitySlot1)
 
 	appointment2 := schema.AppointmentSlot{ID: "1", PatientName: patientName}
 	result2, err := CreateAppointment(&appointment2)
@@ -72,8 +73,9 @@ func TestListAppointments(t *testing.T) {
 		Cost:       5,
 		ToTime:     time.Now().Add(3 * time.Hour),
 	}
-	errorAddingAvailabilitySlot1 := repository.AddAvailabilitySlot(availabilitySlot1)
-	errorAddingAvailabilitySlot2 := repository.AddAvailabilitySlot(availabilitySlot2)
+	service := repository.NewDoctorAvailabilitySlotController()
+	errorAddingAvailabilitySlot1 := service.AddAvailabilitySlot(availabilitySlot1)
+	errorAddingAvailabilitySlot2 := service.AddAvailabilitySlot(availabilitySlot2)
 
 	if errorAddingAvailabilitySlot1 != nil {
 		log.Print("Error adding availability slot 1: ", errorAddingAvailabilitySlot1)

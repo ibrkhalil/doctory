@@ -5,8 +5,17 @@ import (
 	"time"
 
 	"github.com/ibrkhalil/doctory/internal/db"
+	"github.com/ibrkhalil/doctory/internal/package/doctorAppointmentManagement/core/ports"
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
+
+type DoctorAvailabilitySlotController struct {
+	service *ports.DoctorAvailabilitySlotStorage
+}
+
+func NewDoctorAvailabilitySlotController() *DoctorAvailabilitySlotController {
+	return &DoctorAvailabilitySlotController{}
+}
 
 func withinTimeSpan(start, end, check time.Time) bool {
 	if start.Before(end) {
@@ -31,7 +40,7 @@ func availabilityTimeConflict(availability schema.DoctorAvailabilitySlot) bool {
 	return false
 }
 
-func AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
+func (c *DoctorAvailabilitySlotController) AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 	db := db.GetInstance()
 	db.GetDoctorAvailabilitySlotByKey(availability.ID)
 	if !availabilityTimeConflict(availability) {
@@ -42,7 +51,7 @@ func AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 	}
 }
 
-func GetAvailabilityAtTime(date time.Time) (bool, error) {
+func (c *DoctorAvailabilitySlotController) GetAvailabilityAtTime(date time.Time) (bool, error) {
 	db := db.GetInstance()
 	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
 	for _, availabilitySlot := range availabilitySlots {
@@ -56,7 +65,7 @@ func GetAvailabilityAtTime(date time.Time) (bool, error) {
 	return false, errors.New("no available slots at the time")
 }
 
-func ListAvailabilitySlots() ([]schema.DoctorAvailabilitySlot, error) {
+func (c *DoctorAvailabilitySlotController) ListAvailabilitySlots() ([]schema.DoctorAvailabilitySlot, error) {
 	db := db.GetInstance()
 	availabilitySlots := db.GetAllDoctorAvailabilitySlots()
 	if len(availabilitySlots) > 0 {
@@ -67,7 +76,7 @@ func ListAvailabilitySlots() ([]schema.DoctorAvailabilitySlot, error) {
 
 }
 
-func ViewUpcomingAppointments() ([]schema.AppointmentSlot, error) {
+func (c *DoctorAvailabilitySlotController) ViewUpcomingAppointments() ([]schema.AppointmentSlot, error) {
 	db := db.GetInstance()
 	appointments := db.GetAllAppointmentSlots()
 	now := time.Now()
@@ -80,12 +89,12 @@ func ViewUpcomingAppointments() ([]schema.AppointmentSlot, error) {
 	return futureAvailabilities, nil
 }
 
-func CancelAppointmentById(ID string) bool {
+func (c *DoctorAvailabilitySlotController) CancelAppointmentById(ID string) bool {
 	db := db.GetInstance()
 	return db.CancelAppointmentById(ID)
 }
 
-func ConfirmAppointmentById(ID string) bool {
+func (c *DoctorAvailabilitySlotController) ConfirmAppointmentById(ID string) bool {
 	db := db.GetInstance()
 	return db.ConfirmAppointmentById(ID)
 }

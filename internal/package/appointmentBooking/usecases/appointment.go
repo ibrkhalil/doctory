@@ -13,7 +13,7 @@ type AppointmentBookingController struct {
 	service *infrastructure.AppointmeentStorage
 }
 
-func NewTodoController() *AppointmentBookingController {
+func NewAppointmentBookingController() *AppointmentBookingController {
 	return &AppointmentBookingController{}
 }
 

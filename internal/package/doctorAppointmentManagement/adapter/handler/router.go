@@ -18,7 +18,8 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func listAvailabilitySlots(ctx *gin.Context) {
-	slots, err := repository.ListAvailabilitySlots()
+	service := repository.NewDoctorAvailabilitySlotController()
+	slots, err := service.ListAvailabilitySlots()
 	if err != nil {
 		errors.New("An error happened when listing appointments ")
 	} else {
@@ -27,11 +28,12 @@ func listAvailabilitySlots(ctx *gin.Context) {
 }
 
 func createAvailabilitySlot(ctx *gin.Context) {
+	service := repository.NewDoctorAvailabilitySlotController()
 	req, err := utils.CreateAvailabilityFromRequest(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
 	} else {
-		err := repository.AddAvailabilitySlot(req)
+		err := service.AddAvailabilitySlot(req)
 		if err != nil {
 			ctx.JSON(http.StatusCreated, gin.H{"message": "Availability already taken!"})
 		} else {

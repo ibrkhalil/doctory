@@ -6,7 +6,7 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
-	service := usecases.NewTodoController()
+	service := usecases.NewAppointmentBookingController()
 
 	appointmentGroup := router.Group("/appointments")
 	{
