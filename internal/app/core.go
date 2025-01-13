@@ -4,14 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	appointmentBookingApi "github.com/ibrkhalil/doctory/internal/package/appointmentBooking/interfaces/api"
-	"github.com/ibrkhalil/doctory/internal/package/doctorAppointmentManagement"
+	appointmentBookingService "github.com/ibrkhalil/doctory/internal/package/appointmentBooking/interfaces/api"
+	doctorAppointmentManagementService "github.com/ibrkhalil/doctory/internal/package/doctorAppointmentManagement/core/service"
 )
 
 func Main() {
 	r := gin.Default()
-	appointmentBookingApi.InitModule(r)
-	doctorAppointmentManagement.Start(r)
+	appointmentBookingService.InitModule(r)
+	doctorAppointmentManagementService.InitModule(r)
 
 	// Add health endpoint
 	r.GET("health", func(ctx *gin.Context) {

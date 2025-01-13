@@ -124,3 +124,15 @@ func NewAppointmentWithAutoIncrementedSlotID() *schema.AppointmentSlot {
 		SlotId: autoIncrementedId.SlotID(),
 	}
 }
+
+func Clear() {
+	db := GetInstance()
+	db.mutex.Lock()
+	defer db.mutex.Unlock()
+	for k := range db.doctorAvailabilitySlot {
+		delete(db.doctorAvailabilitySlot, k)
+	}
+	for k := range db.appointmentSlots {
+		delete(db.appointmentSlots, k)
+	}
+}

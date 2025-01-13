@@ -1,4 +1,4 @@
-package doctorAppointmentManagement
+package utils
 
 import (
 	"encoding/json"
@@ -10,10 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
-
-func Start(ginEngineInstance *gin.Engine) {
-	InitModule(ginEngineInstance)
-}
 
 func validateAppointmentFromRequest(appointmentSlot schema.DoctorAvailabilitySlot) bool {
 	if appointmentSlot.Cost == 0 || len(appointmentSlot.DoctorID) == 0 ||

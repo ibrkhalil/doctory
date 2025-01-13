@@ -1,4 +1,4 @@
-package doctorAppointmentManagement
+package repository
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-func inTimeSpan(start, end, check time.Time) bool {
+func withinTimeSpan(start, end, check time.Time) bool {
 	if start.Before(end) {
 		return !check.Before(start) && !check.After(end)
 	}
@@ -18,10 +18,13 @@ func inTimeSpan(start, end, check time.Time) bool {
 	return !start.After(check) || !end.Before(check)
 }
 
-func availabilityTimeExists(availability schema.DoctorAvailabilitySlot) bool {
+func availabilityTimeConflict(availability schema.DoctorAvailabilitySlot) bool {
 	availabilitySlots := db.GetInstance().GetAllDoctorAvailabilitySlots()
+	if len(availabilitySlots) == 0 {
+		return false
+	}
 	for _, availabilitySlot := range availabilitySlots {
-		if inTimeSpan(availabilitySlot.Time, availabilitySlot.ToTime, availability.Time) {
+		if withinTimeSpan(availabilitySlot.Time, availabilitySlot.ToTime, availability.Time) {
 			return true
 		}
 	}
@@ -30,17 +33,13 @@ func availabilityTimeExists(availability schema.DoctorAvailabilitySlot) bool {
 
 func AddAvailabilitySlot(availability schema.DoctorAvailabilitySlot) error {
 	db := db.GetInstance()
-	_, idAalreadyExists := db.GetDoctorAvailabilitySlotByKey(availability.ID)
-	if !idAalreadyExists {
-		if !availabilityTimeExists(availability) {
-			db.SetDoctorAvailabilitySlot(availability.ID, availability)
-		} else {
-			return errors.New("Availability slot already taken!")
-		}
+	db.GetDoctorAvailabilitySlotByKey(availability.ID)
+	if !availabilityTimeConflict(availability) {
+		db.SetDoctorAvailabilitySlot(availability.ID, availability)
+		return nil
 	} else {
-		return errors.New("Availability slot already taken!")
+		return errors.New("availability slot time is not available")
 	}
-	return nil
 }
 
 func GetAvailabilityAtTime(date time.Time) (bool, error) {
@@ -54,7 +53,7 @@ func GetAvailabilityAtTime(date time.Time) (bool, error) {
 
 		}
 	}
-	return false, errors.New("No available slots at the time")
+	return false, errors.New("no available slots at the time")
 }
 
 func ListAvailabilitySlots() ([]schema.DoctorAvailabilitySlot, error) {

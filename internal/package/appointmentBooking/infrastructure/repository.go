@@ -9,6 +9,11 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
+type AppointmeentStorage interface {
+	CreateAppointment(appointment schema.AppointmentSlot) (bool, error)
+	ListAppointments() []schema.AppointmentSlot
+}
+
 func reserveAvailabilitySlotAndNotify(db *db.SingletonDB, availabilitySlot schema.DoctorAvailabilitySlot, appointment *schema.AppointmentSlot) error {
 	availabilitySlot.IsReserved = true
 	appointment.StartingTime = availabilitySlot.Time
@@ -36,7 +41,7 @@ func CreateAppointment(appointment *schema.AppointmentSlot) (bool, error) {
 	db := db.GetInstance()
 	appointment.ID = uuid.NewString()
 	doctorAvailabilitySlots := db.GetAllDoctorAvailabilitySlots()
-	var reservedFlag bool
+	reservedFlag := false
 	for _, availabilitySlot := range doctorAvailabilitySlots {
 		if !availabilitySlot.IsReserved && !reservedFlag {
 			reservationErrorStatus := reserveAvailabilitySlotAndNotify(db, availabilitySlot, appointment)

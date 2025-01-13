@@ -1,10 +1,12 @@
-package doctorAppointmentManagement
+package handler
 
 import (
 	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/ibrkhalil/doctory/internal/package/doctorAppointmentManagement/adapter/repository"
+	"github.com/ibrkhalil/doctory/internal/package/doctorAppointmentManagement/core/utils"
 )
 
 func RegisterRoutes(router *gin.Engine) {
@@ -16,7 +18,7 @@ func RegisterRoutes(router *gin.Engine) {
 }
 
 func listAvailabilitySlots(ctx *gin.Context) {
-	slots, err := ListAvailabilitySlots()
+	slots, err := repository.ListAvailabilitySlots()
 	if err != nil {
 		errors.New("An error happened when listing appointments ")
 	} else {
@@ -25,11 +27,11 @@ func listAvailabilitySlots(ctx *gin.Context) {
 }
 
 func createAvailabilitySlot(ctx *gin.Context) {
-	req, err := CreateAvailabilityFromRequest(ctx)
+	req, err := utils.CreateAvailabilityFromRequest(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Bad request"})
 	} else {
-		err := AddAvailabilitySlot(req)
+		err := repository.AddAvailabilitySlot(req)
 		if err != nil {
 			ctx.JSON(http.StatusCreated, gin.H{"message": "Availability already taken!"})
 		} else {
