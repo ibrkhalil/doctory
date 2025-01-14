@@ -12,6 +12,12 @@ type SingletonDB struct {
 	mutex                  sync.Mutex
 }
 
+type slotId struct {
+	sync.Mutex
+	slotId int
+}
+
+var autoIncrementedId slotId
 var singletonInstance *SingletonDB
 var once sync.Once
 
@@ -103,11 +109,6 @@ func (db *SingletonDB) ConfirmAppointmentById(key string) bool {
 	return true
 }
 
-type slotId struct {
-	sync.Mutex
-	slotId int
-}
-
 func (slotId *slotId) SlotID() (id int) {
 	slotId.Lock()
 	defer slotId.Unlock()
@@ -116,8 +117,6 @@ func (slotId *slotId) SlotID() (id int) {
 	slotId.slotId++
 	return
 }
-
-var autoIncrementedId slotId
 
 func NewAppointmentWithAutoIncrementedSlotID() *schema.AppointmentSlot {
 	return &schema.AppointmentSlot{

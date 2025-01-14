@@ -9,7 +9,7 @@ import (
 	"github.com/ibrkhalil/doctory/internal/schema"
 )
 
-type AppointmeentStorage interface {
+type AppointmentStorage interface {
 	CreateAppointment(appointment schema.AppointmentSlot) (bool, error)
 	ListAppointments() []schema.AppointmentSlot
 }

@@ -10,7 +10,7 @@ import (
 )
 
 type AppointmentBookingController struct {
-	service *infrastructure.AppointmeentStorage
+	service *infrastructure.AppointmentStorage
 }
 
 func NewAppointmentBookingController() *AppointmentBookingController {
