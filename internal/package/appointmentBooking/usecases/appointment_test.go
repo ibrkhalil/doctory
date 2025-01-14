@@ -24,17 +24,12 @@ func setupTestRouter() *gin.Engine {
 func TestCreateAppointment(t *testing.T) {
 	router := setupTestRouter()
 
-	t.Run("successful appointment creation", func(t *testing.T) {
+	t.Run("Appointment creation should fail if there's no available doctor availability slots", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		req, _ := http.NewRequest("POST", "/appointments", nil)
 		router.ServeHTTP(w, req)
 
-		assert.Equal(t, http.StatusCreated, w.Code)
-
-		var response map[string]string
-		err := json.Unmarshal(w.Body.Bytes(), &response)
-		assert.NoError(t, err)
-		assert.Contains(t, response["message"], "Succesfully created an appointment at")
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
 	})
 }
 

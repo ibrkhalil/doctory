@@ -23,7 +23,6 @@ func TestCreateAppointment(t *testing.T) {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
-	// There should be an error as there's no availability times available.
 	assert.NotEqual(t, result, nil)
 
 	availabilitySlot1 := schema.DoctorAvailabilitySlot{
@@ -35,14 +34,12 @@ func TestCreateAppointment(t *testing.T) {
 		Cost:       5,
 	}
 
-	// Create availability slot
 	service := repository.NewDoctorAvailabilitySlotController()
 	service.AddAvailabilitySlot(availabilitySlot1)
 
 	appointment2 := schema.AppointmentSlot{ID: "1", PatientName: patientName}
 	result2, err := CreateAppointment(&appointment2)
 
-	// Succeeded
 	assert.Equal(t, result2, true)
 
 }
